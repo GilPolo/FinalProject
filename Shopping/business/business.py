@@ -14,22 +14,54 @@ class Product:
         return round(discountPrice, 2)
 
 class LineItem:
-    def __init__(self, orderID=0, lineID=0, product, quantity=1):
+    def __init__(self, orderID=0, lineID=1, product=None, quantity=1):
             self.__orderID = oderID
             self.__lineID = lineID
             self.__product = product
             self.quantity = quantity
+
+    @property
+    def name(self):
+        return self.__product.name
 
     def getTotal(self):
         total = self.__product.getDiscountPrice() * self.quantity
         return total
 
 class Cart:
-    def __init__(self, orderID=0, status=0, date_added=None):
+    def __init__(self, orderID=0, status=1, date_changed=None):
         self.__orderID=orderID
         self.__status=status
-        self.__date_added=date_added
+        self.__date_changed=date_changed
         self.__lineItems = []
+
+    @property
+    def orderID(self):
+        return self.__orderID
+
+    @orderID.setter
+    def orderID(self, value):
+        self.__orderID = value
+
+    @property
+    def status(self):
+        return self.__status
+
+    @status.setter
+    def status(self, value):
+        n = 0
+        try:
+            n = int(value)
+        except Exception as e:
+            print >>sys.stderr, "Exception Occurred: %s" % e
+            raise e
+        if n < 0 and n > 3:
+            raise ValueError("Order status must be between 1 and 2")
+        self.__orderID = value
+
+    @property
+    def orderDate(self):
+        return self.__date_changed
 
     def addItem(self, item):
         self.__lineItems.append(item)

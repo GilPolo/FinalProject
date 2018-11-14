@@ -25,6 +25,7 @@ def make_order(row):
     return Cart(row["orderID"], row["status"], row["date_added"])
 
 def get_products():
+    global conn
     query = '''select * from Products'''
     with closing(conn.cursor()) as c:
         c.execute(query)
@@ -36,6 +37,7 @@ def get_products():
     return products
 
 def get_product(productID):
+    global conn
     query = '''select * from Products where productID = ?'''
     with closing(conn.cursor()) as c:
         c.execute(query, (productID,))
@@ -47,6 +49,7 @@ def get_product(productID):
         return None
 
 def create_order():
+    global conn
     query = '''insert into Orders (status, date_added) values (0, datetime('now'))'''
     with closing(conn.cursor()) as c:
         c.execute(query)
@@ -54,6 +57,7 @@ def create_order():
         return get_order(c.lastrowid)
 
 def get_order(orderID):
+    global conn
     query = '''select orderID, status, date_added as "st [timestamp]" from Orders where orderID = ?'''
     with closing(conn.cursor()) as c:
         c.execute(query, (orderID,))
@@ -70,17 +74,19 @@ def make_lineitem(row):
     return lineitem
 
 def get_lineitems(orderID):
+    global conn
     query = '''select * from LineItems where orderID = ?'''
     with closing(conn.cursor()) as c:
         c.execute(query, (orderID,))
         results = c.fetchall()
 
     lineitems = []
-    for result in results
+    for result in results:
         lineitems.append(make_lineitem(result))
     return lineitems
 
 def remove_lineitem(LineItem):
+    global conn
     query = '''delete from LineItems where orderID = ? and lineID = ?'''
     with closing(conn.cursor()) as c:
         c.execute(query, (orderID, lineID))
