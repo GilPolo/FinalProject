@@ -1,9 +1,24 @@
+from shopping.db import db
+
+def open():
+    db.open()
+
+def close():
+    db.close()
+
+def getProducts():
+    return db.get_products();
+
 class Product:
     def __init__(self, id=0, name="", price=0.0, discountPercent=0):
             self.__id = id
             self.name = name
             self.price = price
             self.discountPercent = discountPercent
+
+    @property
+    def propertyID(self):
+        return self.__id
 
     def getDiscountAmount(self):
         discountAmount = self.price * self.discountPercent / 100
@@ -18,14 +33,30 @@ class LineItem:
             self.__orderID = oderID
             self.__lineID = lineID
             self.__product = product
-            self.quantity = quantity
+            self.__quantity = quantity
 
     @property
     def name(self):
         return self.__product.name
 
+    @property
+    def orderID(self):
+        return self.__orderID
+
+    @property
+    def lineID(self):
+        return self.__lineID
+
+    @property
+    def productID(self):
+        return self.__product.propertyID
+
+    @property
+    def quantity(self):
+        return self.__quantity
+
     def getTotal(self):
-        total = self.__product.getDiscountPrice() * self.quantity
+        total = self.__product.getDiscountPrice() * self.__quantity
         return total
 
 class Cart:
@@ -55,7 +86,7 @@ class Cart:
         except Exception as e:
             print >>sys.stderr, "Exception Occurred: %s" % e
             raise e
-        if n < 0 and n > 3:
+        if n < 1 and n > 2:
             raise ValueError("Order status must be between 1 and 2")
         self.__orderID = value
 
@@ -88,3 +119,10 @@ class Cart:
         self.__index += 1
         lineItem = self.__lineItems[self.__index]
         return lineItem
+
+    def saveCart():
+        self.__status = 2
+        db.create_order(self)
+        for lineItem in self.__lineItems:
+            lineItem.orderID = self.__orderID
+        db.add_lineitems(self.lineItems)

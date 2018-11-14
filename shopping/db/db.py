@@ -2,13 +2,13 @@ import sys
 import os
 import sqlite3
 from contextlib import closing
-from business import business
+from shopping.business import business
 
 DB_FILE = "_products.db"
 
 conn=None
 
-def connect():
+def open():
     global conn
     if not conn:
         conn = sqlite3.connect(DB_FILE, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
@@ -19,10 +19,10 @@ def close():
         conn.close()
 
 def make_product(row):
-    return Product(row["productID"], row["name"], row["price"], row["discount"])
+    return business.Product(row["productID"], row["name"], row["price"], row["discount"])
 
 def make_order(row):
-    return Cart(row["orderID"], row["status"], row["date_added"])
+    return business.Cart(row["orderID"], row["status"], row["date_added"])
 
 def get_products():
     global conn
@@ -50,11 +50,21 @@ def get_product(productID):
 
 def create_order():
     global conn
-    query = '''insert into Orders (status, date_added) values (0, datetime('now'))'''
+    query = '''insert into Orders (status, date_added) values (1, datetime('now'))'''
     with closing(conn.cursor()) as c:
         c.execute(query)
         conn.commit()
         return get_order(c.lastrowid)
+
+def create_order(cart):
+    global conn
+    rowid = -1
+    query = '''insert into Orders (status, date_added) values (?, datetime('now'))'''
+    with closing(conn.cursor()) as c:
+        c.execute(query, (cart.status,))
+        conn.commit()
+        cart.orderID = rowid = c.lastrowid
+    return rowid
 
 def get_order(orderID):
     global conn
@@ -70,7 +80,7 @@ def get_order(orderID):
 
 def make_lineitem(row):
     product = make_product(row["productID"])
-    lineitem = LineItem(row["orderID"], row["lineID"], product, row["quantity"])
+    lineitem = business.LineItem(row["orderID"], row["lineID"], product, row["quantity"])
     return lineitem
 
 def get_lineitems(orderID):
@@ -85,11 +95,17 @@ def get_lineitems(orderID):
         lineitems.append(make_lineitem(result))
     return lineitems
 
-def remove_lineitem(LineItem):
+def remove_lineitem(orderID):
     global conn
-    query = '''delete from LineItems where orderID = ? and lineID = ?'''
+    query = '''delete from LineItems where orderID = ?'''
     with closing(conn.cursor()) as c:
-        c.execute(query, (orderID, lineID))
+        c.execute(query, (orderID,))
         conn.commit()
 
-def add_lineitem(LineItem):
+def add_lineitems(LineItems):
+    global conn
+    query = '''insert into LineItems (orderID, lineID, productID, quantity) values(?, ?, ?, ?)'''
+    with closing(conn.cursor()) as c:
+        for lineItem in LineItems:
+            c.execute(query, (lineItem.orderID,lineItem.orderID,lineItem.productID,lineItem.quantity))
+        conn.commit()
