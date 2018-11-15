@@ -28,9 +28,12 @@ class Product:
         discountPrice = self.price - self.getDiscountAmount()
         return round(discountPrice, 2)
 
+    def __str__(self):
+        return "Id: {:d}, Name: {:s}, Price: {:9.2f}, Discount: {:6.2f}".format(self.__id, self.name, self.price, self.discountPercent)
+
 class LineItem:
     def __init__(self, orderID=0, lineID=1, product=None, quantity=1):
-            self.__orderID = oderID
+            self.__orderID = orderID
             self.__lineID = lineID
             self.__product = product
             self.__quantity = quantity
@@ -43,9 +46,17 @@ class LineItem:
     def orderID(self):
         return self.__orderID
 
+    @orderID.setter
+    def orderID(self, value):
+        self.__orderID = value
+
     @property
     def lineID(self):
         return self.__lineID
+
+    @lineID.setter
+    def lineID(self, value):
+        self.__lineID = value
 
     @property
     def productID(self):
@@ -120,9 +131,9 @@ class Cart:
         lineItem = self.__lineItems[self.__index]
         return lineItem
 
-    def saveCart():
+    def saveCart(self):
         self.__status = 2
         db.create_order(self)
         for lineItem in self.__lineItems:
             lineItem.orderID = self.__orderID
-        db.add_lineitems(self.lineItems)
+        db.add_lineitems(self.__lineItems)

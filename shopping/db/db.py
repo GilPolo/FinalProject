@@ -11,7 +11,11 @@ conn=None
 def open():
     global conn
     if not conn:
-        conn = sqlite3.connect(DB_FILE, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        path = os.path.abspath(__file__)
+        dir_path = os.path.dirname(path)
+        path = os.path.join(dir_path, DB_FILE)
+        print("DB Directory path ", path)
+        conn = sqlite3.connect(path, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         conn.row_factory = sqlite3.Row
 
 def close():
@@ -43,7 +47,7 @@ def get_product(productID):
         c.execute(query, (productID,))
         result = c.fetchone()
     
-    if result <> None:
+    if result != None:
         return make_product(result)
     else:
         return None
@@ -73,7 +77,7 @@ def get_order(orderID):
         c.execute(query, (orderID,))
         result = c.fetchone()
 
-    if result <> None:
+    if result != None:
         return make_order(result)
     else:
         return None
