@@ -111,5 +111,5 @@ def add_lineitems(LineItems):
     query = '''insert into LineItems (orderID, lineID, productID, quantity) values(?, ?, ?, ?)'''
     with closing(conn.cursor()) as c:
         for lineItem in LineItems:
-            c.execute(query, (lineItem.orderID,lineItem.orderID,lineItem.productID,lineItem.quantity))
+            c.execute(query, (lineItem.orderID,lineItem.lineID,lineItem.productID,lineItem.quantity))
         conn.commit()

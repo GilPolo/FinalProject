@@ -13,7 +13,6 @@ def Test2():
     print()
     print("Running: Test2....")
     product = db.get_product(1)
-    print(str(product))
 
 def Test3():
     print()
@@ -33,7 +32,29 @@ def Test3():
     print("Saving Cart...")
     cart.saveCart()
     product = db.get_product(1)
-    print(str(product))
+
+def Test4():
+    print()
+    print("Running: Test4....")
+    print("Creating Order....")
+    cart = business.Cart()
+    product1 = db.get_product(1)
+    product2 = db.get_product(2)
+    product3 = db.get_product(3)
+    product4 = db.get_product(4)
+    lineItem = business.LineItem(0, 1, product1, 2)
+    cart.addItem(lineItem)
+    lineItem = business.LineItem(0, 2, product2, 3)
+    cart.addItem(lineItem)
+    lineItem = business.LineItem(0, 3, product3, 1)
+    cart.addItem(lineItem)
+    lineItem = business.LineItem(0, 4, product4, 4)
+    cart.addItem(lineItem)
+    cart.removeItem(1)
+    print("Cart Total {:9.2f}".format(cart.getTotal()))
+    print("Saving Cart...")
+    cart.saveCart()
+    product = db.get_product(1)
 
 def main(argv):
     try:
@@ -41,6 +62,7 @@ def main(argv):
         Test1()
         Test2()
         Test3()
+        Test4()
     except Exception as e:
         print >>sys.stderr, "Exception Occurred: %s" % e
         print >>sys.stderr, traceback.print_exc()

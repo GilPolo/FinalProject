@@ -110,6 +110,8 @@ class Cart:
 
     def removeItem(self, index):
         self.__lineItems.pop(index)
+        for x in range(index, len(self.__lineItems)):
+            self.__lineItems[x].lineID = x + 1
 
     def getTotal(self):
         total = 0.0
