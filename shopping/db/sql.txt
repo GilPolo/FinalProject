@@ -1,0 +1,1 @@
+select a.orderID, a.status, a.date_added, c.name, c.price, c.discount,b.quantity from Orders a left outer join LineItems b on b.orderID = a.orderID left outer join Products c on c.productID = b.productID where a.orderID = 2;

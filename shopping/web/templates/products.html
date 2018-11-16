@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+ 
+<div class="block1">
+<h1>Shopping Cart Web Site</h1>
+	<h2>Shop to your hearts content!!! </h2>
+<img src="http://www.naturalprogramming.com/images/smilingpython.gif">
+<ul>
+    {% for product in products %}
+    <li> {{ product.name }} </li>
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}
