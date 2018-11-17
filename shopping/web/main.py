@@ -1,6 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from random import randint
-from ..business import business
+from shopping.business import business
 
 app = Flask(__name__)
 
@@ -12,4 +12,4 @@ def index():
     return render_template('products.html', products=products)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)

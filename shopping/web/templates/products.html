@@ -5,10 +5,16 @@
 <h1>Shopping Cart Web Site</h1>
 	<h2>Shop to your hearts content!!! </h2>
 <img src="http://www.naturalprogramming.com/images/smilingpython.gif">
-<ul>
+<table border=1>
+    <thead>Products</thead>
+    <tbody>
     {% for product in products %}
-    <li> {{ product.name }} </li>
+        <tr>
+            <td> {{ product.name }} </td>
+            <td> {{ product.getDiscountAmount() }} </td>
+            <td> {{ product.getDiscountPrice() }} </td>
+        </tr>
+    </tbody>
     {% endfor %}
-</ul>
 </div>
 {% endblock %}
