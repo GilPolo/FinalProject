@@ -5,14 +5,28 @@
 <h1>Shopping Cart Web Site</h1>
 	<h2>Shop to your hearts content!!! </h2>
 <img src="http://www.naturalprogramming.com/images/smilingpython.gif">
-<table border=1>
-    <thead>Products</thead>
+<table id="products" border=1>
+    <thead>
+        <tr>
+            <th colspan=3>Products</th>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>Discount</th>
+            <th>Discount Amount</th>
+        </tr>
+    </thead>
     <tbody>
     {% for product in products %}
-        <tr>
+        <tr id={{product.propertyID}}>
             <td> {{ product.name }} </td>
             <td> {{ product.getDiscountAmount() }} </td>
             <td> {{ product.getDiscountPrice() }} </td>
+            <td> 
+                <form action="/addtocart/" method="post">
+                    <button value={{product.propertyID}} name="addtocart" type="submit">Add</button>
+                </form>
+            </td>
         </tr>
     </tbody>
     {% endfor %}

@@ -58,7 +58,6 @@ def Test4():
 
 def main(argv):
     try:
-        business.open()
         Test1()
         Test2()
         Test3()
@@ -69,8 +68,6 @@ def main(argv):
     except:
         print >>sys.stderr, "Unexpected Exception Occurred"
         print >>sys.stderr, traceback.print_exc()
-    finally:
-        business.close()
 
 if __name__ == "__main__":
     main( sys.argv )

@@ -1,11 +1,5 @@
 from shopping.db import db
 
-def open():
-    db.open()
-
-def close():
-    db.close()
-
 def getProducts():
     return db.get_products();
 

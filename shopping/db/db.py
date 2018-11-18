@@ -6,21 +6,23 @@ from shopping.business import business
 
 DB_FILE = "_products.db"
 
-conn=None
-
-def open():
-    global conn
-    if not conn:
+class Connection:
+    def __init__(self):
         path = os.path.abspath(__file__)
         dir_path = os.path.dirname(path)
         path = os.path.join(dir_path, DB_FILE)
         print("DB Directory path ", path)
-        conn = sqlite3.connect(path, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        conn.row_factory = sqlite3.Row
+        self.conn = sqlite3.connect(path, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        self.conn.row_factory = sqlite3.Row
 
-def close():
-    if conn:
-        conn.close()
+    def __del__(self):
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+
+    @property
+    def connection(self):
+        return self.conn
 
 def make_product(row):
     return business.Product(row["productID"], row["name"], row["price"], row["discount"])
@@ -29,9 +31,9 @@ def make_order(row):
     return business.Cart(row["orderID"], row["status"], row["date_added"])
 
 def get_products():
-    global conn
+    conn = Connection()
     query = '''select * from Products'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query)
         results = c.fetchall()
 
@@ -41,9 +43,9 @@ def get_products():
     return products
 
 def get_product(productID):
-    global conn
+    conn = Connection()
     query = '''select * from Products where productID = ?'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query, (productID,))
         result = c.fetchone()
     
@@ -53,27 +55,27 @@ def get_product(productID):
         return None
 
 def create_order():
-    global conn
+    conn = Connection()
     query = '''insert into Orders (status, date_added) values (1, datetime('now'))'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query)
-        conn.commit()
+        conn.connection.commit()
         return get_order(c.lastrowid)
 
 def create_order(cart):
-    global conn
+    conn = Connection()
     rowid = -1
     query = '''insert into Orders (status, date_added) values (?, datetime('now'))'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query, (cart.status,))
-        conn.commit()
+        conn.connection.commit()
         cart.orderID = rowid = c.lastrowid
     return rowid
 
 def get_order(orderID):
-    global conn
+    conn = Connection()
     query = '''select orderID, status, date_added as "st [timestamp]" from Orders where orderID = ?'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query, (orderID,))
         result = c.fetchone()
 
@@ -88,9 +90,9 @@ def make_lineitem(row):
     return lineitem
 
 def get_lineitems(orderID):
-    global conn
+    conn = Connection()
     query = '''select * from LineItems where orderID = ?'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query, (orderID,))
         results = c.fetchall()
 
@@ -100,16 +102,16 @@ def get_lineitems(orderID):
     return lineitems
 
 def remove_lineitem(orderID):
-    global conn
+    conn = Connection()
     query = '''delete from LineItems where orderID = ?'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         c.execute(query, (orderID,))
-        conn.commit()
+        conn.connection.commit()
 
 def add_lineitems(LineItems):
-    global conn
+    conn = Connection()
     query = '''insert into LineItems (orderID, lineID, productID, quantity) values(?, ?, ?, ?)'''
-    with closing(conn.cursor()) as c:
+    with closing(conn.connection.cursor()) as c:
         for lineItem in LineItems:
             c.execute(query, (lineItem.orderID,lineItem.lineID,lineItem.productID,lineItem.quantity))
-        conn.commit()
+        conn.connection.commit()
