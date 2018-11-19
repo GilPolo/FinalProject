@@ -28,7 +28,9 @@ def make_product(row):
     return business.Product(row["productID"], row["name"], row["price"], row["discount"])
 
 def make_order(row):
-    return business.Cart(row["orderID"], row["status"], row["date_added"])
+    print(str(row))
+    #return business.Cart(row["orderID"], row["status"], row["st [timestamp]"])
+    return business.Cart(row[0], row[1], row[2])
 
 def get_products():
     conn = Connection()
@@ -72,6 +74,16 @@ def create_order(cart):
         cart.orderID = rowid = c.lastrowid
     return rowid
 
+def save_order(cart):
+    conn = Connection()
+    rowid = -1
+    query = '''update Orders set status=?, date_added = datetime('now') where orderID=?'''
+    with closing(conn.connection.cursor()) as c:
+        c.execute(query, (cart.status,cart.orderID))
+        conn.connection.commit()
+        cart.orderID = rowid = c.lastrowid
+    return rowid
+
 def get_order(orderID):
     conn = Connection()
     query = '''select orderID, status, date_added as "st [timestamp]" from Orders where orderID = ?'''
@@ -89,7 +101,7 @@ def make_lineitem(row):
     lineitem = business.LineItem(row["orderID"], row["lineID"], product, row["quantity"])
     return lineitem
 
-def get_lineitems(orderID):
+def get_lineItems(orderID):
     conn = Connection()
     query = '''select * from LineItems where orderID = ?'''
     with closing(conn.connection.cursor()) as c:
@@ -101,7 +113,7 @@ def get_lineitems(orderID):
         lineitems.append(make_lineitem(result))
     return lineitems
 
-def remove_lineitem(orderID):
+def remove_lineitems(orderID):
     conn = Connection()
     query = '''delete from LineItems where orderID = ?'''
     with closing(conn.connection.cursor()) as c:
