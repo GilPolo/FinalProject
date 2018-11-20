@@ -4,7 +4,6 @@
 {% if cart != None: %}
 <div class="block2">
 <h2>Order placed</h2>
-{% set grandTotal = 0 %}
 <table id="cart" border=1>
     <thead>
         <tr>
@@ -18,8 +17,6 @@
     </thead>
     <tbody>
     {% for item in cart %}
-        {% set grandTotal = grandTotal + item.getTotal() %}
-        {{ granTotal }}
         <tr id={{item.propertyID}}>
             <td> {{ item.name }} </td>
             <td> {{ item.quantity }} </td>
@@ -30,7 +27,7 @@
     <tfoot>
         <tr>
             <th colspan=2>Grand Total</th>
-            <th> {{ grandTotal }} </th>
+            <th> {{ cart.getTotal() }} </th>
         </tr>
     </tfoot>
 </table>
