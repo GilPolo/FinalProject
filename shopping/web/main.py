@@ -16,7 +16,6 @@ def index():
 def addCart():
     cart = None
     if request.method == 'POST':
-        print(request.form)
         productID = request.form['addtocart']
         if 'cart' in session:
             orderID = session['cart']
@@ -35,6 +34,16 @@ def addCart():
              
     products = business.getProducts()
     return render_template('products.html', products=products, cart=cart)
+
+@app.route("/savecart/",methods=['POST'])
+def saveCart():
+    cart = None
+    if request.method == 'POST' and 'cart' in session:
+        orderID = session['cart']
+        cart = business.readCart(orderID)
+        cart.status=2
+        cart.saveCart()
+    return render_template('saveorder.html', cart=cart)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)
