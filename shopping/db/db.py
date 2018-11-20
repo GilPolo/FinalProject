@@ -28,9 +28,9 @@ def make_product(row):
     return business.Product(row["productID"], row["name"], row["price"], row["discount"])
 
 def make_order(row):
-    print(str(row))
     #return business.Cart(row["orderID"], row["status"], row["st [timestamp]"])
-    return business.Cart(row[0], row[1], row[2])
+    return business.Cart(row["orderID"], row["status"], row["date_added"])
+    #return business.Cart(row[0], row[1], row[2])
 
 def get_products():
     conn = Connection()
@@ -81,24 +81,22 @@ def save_order(cart):
     with closing(conn.connection.cursor()) as c:
         c.execute(query, (cart.status,cart.orderID))
         conn.connection.commit()
-        cart.orderID = rowid = c.lastrowid
-    return rowid
+    return cart.orderID
 
 def get_order(orderID):
     conn = Connection()
-    query = '''select orderID, status, date_added as "st [timestamp]" from Orders where orderID = ?'''
+    #query = '''select orderID, status, date_added as "st [timestamp]" from Orders where orderID = ?'''
+    query = '''select orderID, status, date_added from Orders where orderID = ?'''
     with closing(conn.connection.cursor()) as c:
         c.execute(query, (orderID,))
         result = c.fetchone()
-
     if result != None:
         return make_order(result)
     else:
         return None
 
 def make_lineitem(row):
-    product = make_product(row["productID"])
-    lineitem = business.LineItem(row["orderID"], row["lineID"], product, row["quantity"])
+    lineitem = business.LineItem(row["orderID"], row["lineID"], get_product(row["productID"]), row["quantity"])
     return lineitem
 
 def get_lineItems(orderID):

@@ -7,32 +7,34 @@ app.secret_key="My Apollo Secret Key"
 
 @app.route("/")
 def index():
+    if 'cart' in session:
+        del session['cart']
     products = business.getProducts()
-    return render_template('products.html', products=products)
+    return render_template('products.html', products=products, cart=None)
 
 @app.route("/addtocart/",methods=['POST'])
 def addCart():
+    cart = None
     if request.method == 'POST':
         print(request.form)
         productID = request.form['addtocart']
         if 'cart' in session:
-            cart = session['cart']
-            item = cart.getLineItemByProductID(productID)
-            if item != None:
-                item.quantity = item.quantity + 1
-            else:
-                product = business.getProduct(productID)
-                lineItem = business.LineItem(0, cart.getItemCount() + 1, product, 1)
-                cart.addItem(lineItem)
+            orderID = session['cart']
+            cart = business.readCart(orderID)
+            product = business.getProduct(productID)
+            lineItem = business.LineItem(orderID, 1, product, 1)
+            cart.addItem(lineItem) 
+            cart.saveCart()
         else:
             cart = business.Cart()
             product = business.getProduct(productID)
             lineItem = business.LineItem(0, 1, product, 1)
-            cart.addItem(lineItem)
-            session['cart'] = cart
+            cart.addItem(lineItem) 
+            orderID=cart.createCart()
+            session['cart'] = orderID
              
     products = business.getProducts()
-    return render_template('products.html', products=products)
+    return render_template('products.html', products=products, cart=cart)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080, debug=True)

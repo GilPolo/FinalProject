@@ -9,6 +9,7 @@ def getProduct(productID):
 def readCart(orderID):
     cart = db.get_order(orderID)
     cart.lineItems = db.get_lineItems(orderID)
+    return cart
 
 class Product(object):
     def __init__(self, id=0, name="", price=0.0, discountPercent=0):
@@ -83,7 +84,7 @@ class Cart(object):
         self.__lineItems = []
 
     def __str__(self):
-        return "Id: {:d}, Status: {:d}, Date: {:s}".format(self.__orderID, self.__status, self.__date_added)
+        return "Id: {:d}, Status: {:d}, Date: {:s}".format(self.__orderID, self.__status, self.__date_changed)
 
     @property
     def orderID(self):
@@ -107,7 +108,7 @@ class Cart(object):
             raise e
         if n < 1 and n > 2:
             raise ValueError("Order status must be between 1 and 2")
-        self.__orderID = value
+        self.__status = value
 
     @property
     def orderDate(self):
@@ -122,6 +123,10 @@ class Cart(object):
         self.__lineItems = value
 
     def addItem(self, item):
+        for x in range(len(self.__lineItems)):
+            if self.__lineItems[x].productID == item.productID:
+                self.__lineItems[x].quantity += item.quantity
+                return
         item.lineID = len(self.__lineItems) + 1
         self.__lineItems.append(item)
 
@@ -164,8 +169,7 @@ class Cart(object):
         db.add_lineitems(self.__lineItems)
         return self.__orderID
 
-    def saveCart(self, status=2):
-        self.__status = status
+    def saveCart(self):
         db.save_order(self)
         db.remove_lineitems(self.__orderID)
         for lineItem in self.__lineItems:
