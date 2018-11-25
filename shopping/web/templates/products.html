@@ -25,7 +25,7 @@
             <td> {{ product.getDiscountPrice() }} </td>
             <td> 
                 <form action="/addtocart/" method="post">
-                    <button value={{product.propertyID}} name="addtocart" type="submit">Add</button>
+                    <button value={{product.propertyID}} name="productID" type="submit" title="Adds item to cart or increases quantity of item">Add</button>
                 </form>
             </td>
         </tr>
@@ -40,20 +40,26 @@
 <table id="cart" border=1>
     <thead>
         <tr>
-            <th colspan=3>Cart</th>
+            <th colspan=4>Cart</th>
         </tr>
         <tr>
             <th>Name</th>
             <th>Quantity</th>
             <th>Total Amount</th>
+            <th>Remove Item</th>
         </tr>
     </thead>
     <tbody>
     {% for item in cart %}
-        <tr id={{item.propertyID}}>
+        <tr>
             <td> {{ item.name }} </td>
             <td> {{ item.quantity }} </td>
             <td> {{ item.getTotal() }} </td>
+            <td> 
+                <form action="/removefromcart/" method="post">
+                    <button value={{ item.productID }} name="productID" type="submit">Remove</button>
+                </form>
+            </td>
         </tr>
     </tbody>
     {% endfor %}

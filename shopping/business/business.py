@@ -135,6 +135,12 @@ class Cart(object):
         for x in range(index, len(self.__lineItems)):
             self.__lineItems[x].lineID = x + 1
 
+    def removeItemByProductID(self, productID):
+        for x in range(len(self.__lineItems)):
+            if self.__lineItems[x].productID == productID:
+                self.removeItem(x) 
+                return
+
     def getTotal(self):
         total = 0.0
         for item in self.__lineItems:

@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, Response, session, abort
+from flask import Flask, flash, redirect, render_template, request, Response, session, abort, url_for
 from random import randint
 from shopping.business import business
 
@@ -16,7 +16,7 @@ def index():
 def addCart():
     cart = None
     if request.method == 'POST':
-        productID = request.form['addtocart']
+        productID = request.form['productID']
         if 'cart' in session:
             orderID = session['cart']
             cart = business.readCart(orderID)
@@ -31,6 +31,22 @@ def addCart():
             cart.addItem(lineItem) 
             orderID=cart.createCart()
             session['cart'] = orderID
+             
+    products = business.getProducts()
+    return render_template('products.html', products=products, cart=cart)
+
+@app.route("/removefromcart/",methods=['POST'])
+def removeFromCart():
+    cart = None
+    if request.method == 'POST':
+        productID = int(request.form['productID'])
+        if 'cart' in session:
+            orderID = session['cart']
+            cart = business.readCart(orderID)
+            cart.removeItemByProductID(productID)
+            cart.saveCart()
+            if cart.getItemCount() <= 0:
+                return redirect(url_for('index'))
              
     products = business.getProducts()
     return render_template('products.html', products=products, cart=cart)
