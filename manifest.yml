@@ -1,0 +1,6 @@
+---
+applications:
+ - name: GPOLOCOP4045FinalProject
+   random-route: true
+   memory: 256M
+   command: python -m shopping.web.main

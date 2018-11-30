@@ -1,6 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, Response, session, abort, url_for
 from random import randint
 from shopping.business import business
+import os
 
 app = Flask(__name__)
 app.secret_key="My Apollo Secret Key"
@@ -61,5 +62,7 @@ def saveCart():
         cart.saveCart()
     return render_template('saveorder.html', cart=cart)
 
+port = int(os.getenv('PORT', 8080))
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)

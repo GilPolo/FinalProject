@@ -1,0 +1,10 @@
+.DS_Store
+.git
+.gitignore
+LICENSE
+README.md
+*.swp
+__pycache__
+.DS_Store
+FinalProjectUML.png
+Gilbert Polo-assignment_Final.docx
